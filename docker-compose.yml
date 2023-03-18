@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+
+  db_keycloak:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=user_keycloak
+      - POSTGRES_PASSWORD=pass_keycload
+      - POSTGRES_DB=db_keycloak
+    ports:
+      - '65432:5432'
+    volumes: 
+      - ./dat/db/db_keycloak:/var/lib/postgresql/data
+
+  srv_keycloak:
+    image: jboss/keycloak
+    depends_on:
+        - db_keycloak
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - DB_VENDOR=postgres
+      - DB_ADDR=db_keycloak
+      - DB_DATABASE=db_keycloak
+      - DB_USER=user_keycloak
+      - DB_SCHEMA=public
+      - DB_PASSWORD=pass_keycload
+    ports:
+      - 8080:8080
